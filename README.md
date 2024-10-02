@@ -9,16 +9,147 @@ This plugin will allow secure online payment on your WooCommerce store, without 
 
 WooCommerce-NICEPAY is official plugin from NICEPAY. NICEPAY is an online payment gateway. We strive to make payments simple & secure for both the merchant and customers. Support various online payment channel.
 
-Please follow [this step by step guide](https://docs.nicepay.co.id/woocommerce) for complete configuration.
-
 Payment Method Feature:
 
 - E-Wallet SNAP.
 - Virtual Account SNAP.
 - QRIS SNAP.
-- CC V2
+- CC V2.
+- Payout (Disbursment) SNAP
 
 ### Installation
+download plugin in (https://github.com/nicepay-dev/plugs-libs/tree/master/WooCommerce)
+ - go to plugin menu on Wordpress
+ - chose file in your drive and instal plugin
+ - select and active plugin.
+
+### Configuration
+
+Please follow [this step by step guide](https://docs.nicepay.co.id/woocommerce) for complete configuration.
+Configure it from WooCommerce > Settings > Payment > Nicepay paymethod > Manage under configuration field WC Order Status on Payment Paid.
+
+Mandatory parameter on option configure : 
+
+- X-CLIENT-KEY = value Merchant ID from NICEPay, 
+- privateKey = value Key private, 
+- Client Secret = value client secret.
+
+### request-for-access-token
+
+         // Create Access Token
+            $X_CLIENT_KEY = $this->XCLIENTKEY;
+            $requestToken = VAV2Config::NICEPAY_ACCESS_TOKEN_URL;
+            // date_default_timezone_set('Asia/Jakarta');
+            // $X_TIMESTAMP = date('c');
+            $stringToSign = $X_CLIENT_KEY."|".$nicepay->get('X-TIMESTAMP');
+            $privatekey = "-----BEGIN RSA PRIVATE KEY-----" . "\r\n" .
+            $this->privateKey . // string private key
+            "\r\n" .
+            "-----END RSA PRIVATE KEY-----";
+            $binary_signature = "";
+            $pKey = openssl_pkey_get_private($privatekey);
+            
+            // print_r($X_CLIENT_KEY);exit();
+            openssl_sign($stringToSign, $binary_signature, $pKey, OPENSSL_ALGO_SHA256);
+            
+            openssl_pkey_free($pKey);
+            $signature = base64_encode($binary_signature);
+            // print_r($requestToken);exit();
+            $jsonData = array(
+              "grantType" => "client_credentials",
+            "additionalInfo" => ""
+          );
+
+
+            $jsonDataEncode = json_encode($jsonData);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $requestToken);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonDataEncode);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'X-SIGNATURE: '.base64_encode($binary_signature),
+                'X-CLIENT-KEY: '.$X_CLIENT_KEY,
+                'X-TIMESTAMP: '.$nicepay->get("X-TIMESTAMP")
+            ));
+
+            $output = curl_exec($ch);
+            $AcToken = json_decode($output);
+            $accessToken = $AcToken->accessToken;
+            // print_r($AcToken);exit();
+            WC()->session->set('accessToken', $AcToken->responseCode);
+
+### Create Transaction :
+            $X_TIMESTAMP = $nicepay->get("X-TIMESTAMP");
+            $timestamp = date('YmdHis');
+            $CreateVA = VAV2Config::NICEPAY_GENERATE_VA_URL;
+            $authorization = "Bearer ".$accessToken;
+            $channel = $X_CLIENT_KEY."01";
+            $external = $timestamp.rand();
+            $partner = $X_CLIENT_KEY;
+            $amt = $nicepay->get("amt");
+            $secretClient = $this->secretClient;
+            // "33F49GnCMS1mFYlGXisbUDzVf2ATWCl9k3R++d5hDd3Frmuos/XLx8XhXpe+LDYAbpGKZYSwtlyyLOtS/8aD7A==";
+            $additionalInfo = [
+              "bankCd" => $nicepay->get("bankCd"),
+              "goodsNm" => $nicepay->get("virtualAccountName"),
+              "dbProcessUrl" => $nicepay->get("dbProcessUrl"),
+              "vacctValidDt" => $nicepay->get("vacctValidDt"),
+              "vacctValidTm" => $nicepay->get("vacctValidTm"),
+              "msId" => "",
+              "msFee" => "",
+              "msFeeType" => "",
+              "mbFee" => "",
+              "mbFeeType" => ""
+            ];
+            // print_r($additionalInfo);exit();
+
+            $TotalAmount = [
+              "value"=> $nicepay->get("amt").".00",
+              "currency" => $nicepay->get("currency")
+            ];
+
+
+            $newBody = [
+              "partnerServiceId" => "",
+              "customerNo" => "",
+              "virtualAccountNo"=>"",
+              "virtualAccountName"=> $nicepay->get("virtualAccountName"),
+              "trxId"=> $nicepay->get("trxId")."",
+              "totalAmount" => $TotalAmount,
+              "additionalInfo" => $additionalInfo
+            ];
+            
+            
+            $stringBody = json_encode($newBody);
+            // print_r($stringBody);exit();
+            $hashbody = strtolower(hash("SHA256", $stringBody));
+
+            // print_r($CreateVA);exit();
+
+            $strigSign = "POST:/api/v1.0/transfer-va/create-va:".$accessToken.":".$hashbody.":".$X_TIMESTAMP;
+            $bodyHasing = hash_hmac("sha512", $strigSign, $secretClient, true);
+            // echo base64_encode($bodyHasing);exit();
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,$CreateVA);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt ($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $stringBody);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'X-SIGNATURE: '.base64_encode($bodyHasing),
+            'X-CLIENT-KEY: '.$X_CLIENT_KEY,
+            'X-TIMESTAMP: '.$X_TIMESTAMP,
+            'Authorization: '.$authorization,
+            'CHANNEL-ID: '.$channel,
+            'X-EXTERNAL-ID: '.$external,
+            'X-PARTNER-ID: '.$X_CLIENT_KEY
+        ));
+
+      $output = curl_exec($ch);
+      $data = json_decode($output);
 
 #### Minimum Requirements
 
@@ -40,6 +171,8 @@ Payment Method Feature:
    - Click Save Changes
    - Note: key for Development enviroment & Production enviroment is different, make sure you use the correct one.
    - Other configuration are optional, you may leave it as is.
+
+
 
 #### Get help
 
