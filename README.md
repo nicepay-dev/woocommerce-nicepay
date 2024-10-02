@@ -26,18 +26,17 @@ Our Woocommerce Library already support on Each paymethod, this library support
 - Ewallet
 - QRIS
 
-### 1. Installation
-download plugin in (https://github.com/nicepay-dev/plugs-libs/tree/master/WooCommerce)
- - go to plugin menu on Wordpress
- - chose file in your drive and instal plugin
- - select and active plugin.
-
-#### 1.1 Minimum Requirements
+## 1. Installation
+### 1.1 Minimum Requirements
 
 - WordPress v3.9 or greater (tested up to v5.x)
 - WooCommerce v2 or greater (tested up to v3.5.2)
 
-#### 1.2 Manual Installation
+### 1.2 Manual Installation
+download plugin in (https://github.com/nicepay-dev/plugs-libs/tree/master/WooCommerce)
+ - go to plugin menu on Wordpress
+ - chose file in your drive and instal plugin
+ - select and active plugin.
 
 1. [Download](../../archive/main.zip) the plugin from this repository.
 2. Extract the plugin, then rename the folder modules as **woocommerce-NICEPAY**.
@@ -52,8 +51,7 @@ download plugin in (https://github.com/nicepay-dev/plugs-libs/tree/master/WooCom
    - Click Save Changes
    - Note: key for Development enviroment & Production enviroment is different, make sure you use the correct one.
    - Other configuration are optional, you may leave it as is.
-### 2. Usage
-
+## 2. Usage
 ### 2.1 Client Initialization and Configuration
 
 Please follow [this step by step guide](https://docs.nicepay.co.id/woocommerce) for complete configuration.
@@ -65,7 +63,7 @@ Mandatory parameter on option configure :
 - Client Secret = value client secret.
 
 ### 2.2 Access Token
-
+ ```php
          // Create Access Token
             $X_CLIENT_KEY = $this->XCLIENTKEY;
             $requestToken = VAV2Config::NICEPAY_ACCESS_TOKEN_URL;
@@ -109,8 +107,9 @@ Mandatory parameter on option configure :
             $accessToken = $AcToken->accessToken;
             // print_r($AcToken);exit();
             WC()->session->set('accessToken', $AcToken->responseCode);
-
+```
 ### 2.3 Generate VA :
+```php
             $X_TIMESTAMP = $nicepay->get("X-TIMESTAMP");
             $timestamp = date('YmdHis');
             $CreateVA = VAV2Config::NICEPAY_GENERATE_VA_URL;
@@ -180,9 +179,10 @@ Mandatory parameter on option configure :
 
       $output = curl_exec($ch);
       $data = json_decode($output);
-
+```
 #### Notes
 Please Instal Wordpress and Woocomerce before instal Plugin 
+This library is meant to be implemented on your backend server using PHP.
 
 #### Get help
 
