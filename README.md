@@ -26,18 +26,18 @@ Our Woocommerce Library already support on Each paymethod, this library support
 - Ewallet
 - QRIS
 
-### Installation
+### 1. Installation
 download plugin in (https://github.com/nicepay-dev/plugs-libs/tree/master/WooCommerce)
  - go to plugin menu on Wordpress
  - chose file in your drive and instal plugin
  - select and active plugin.
 
-#### Minimum Requirements
+#### 1.1 Minimum Requirements
 
 - WordPress v3.9 or greater (tested up to v5.x)
 - WooCommerce v2 or greater (tested up to v3.5.2)
 
-#### Manual Installation
+#### 1.2 Manual Installation
 
 1. [Download](../../archive/main.zip) the plugin from this repository.
 2. Extract the plugin, then rename the folder modules as **woocommerce-NICEPAY**.
@@ -52,8 +52,9 @@ download plugin in (https://github.com/nicepay-dev/plugs-libs/tree/master/WooCom
    - Click Save Changes
    - Note: key for Development enviroment & Production enviroment is different, make sure you use the correct one.
    - Other configuration are optional, you may leave it as is.
+### 2. Usage
 
-### Client Initialization and Configuration
+### 2.1 Client Initialization and Configuration
 
 Please follow [this step by step guide](https://docs.nicepay.co.id/woocommerce) for complete configuration.
 Configure it from WooCommerce > Settings > Payment > Nicepay paymethod > Manage under configuration field WC Order Status on Payment Paid.
@@ -63,7 +64,7 @@ Mandatory parameter on option configure :
 - privateKey = value Key private, 
 - Client Secret = value client secret.
 
-### Access Token
+### 2.2 Access Token
 
          // Create Access Token
             $X_CLIENT_KEY = $this->XCLIENTKEY;
@@ -109,7 +110,7 @@ Mandatory parameter on option configure :
             // print_r($AcToken);exit();
             WC()->session->set('accessToken', $AcToken->responseCode);
 
-### Generate VA :
+### 2.3 Generate VA :
             $X_TIMESTAMP = $nicepay->get("X-TIMESTAMP");
             $timestamp = date('YmdHis');
             $CreateVA = VAV2Config::NICEPAY_GENERATE_VA_URL;
