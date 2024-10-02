@@ -9,13 +9,22 @@ This plugin will allow secure online payment on your WooCommerce store, without 
 
 WooCommerce-NICEPAY is official plugin from NICEPAY. NICEPAY is an online payment gateway. We strive to make payments simple & secure for both the merchant and customers. Support various online payment channel.
 
-Payment Method Feature:
+### Overview Paymethod : 
+Our Woocommerce Library already support on Each paymethod, this library support 
 
+*SNAP
 - E-Wallet SNAP.
 - Virtual Account SNAP.
 - QRIS SNAP.
-- CC V2.
-- Payout (Disbursment) SNAP
+- Payout (Disbursment) SNAP'
+
+*NON SNAP
+- Credit Card
+- Virtual Account
+- CVS
+- Payloan
+- Ewallet
+- QRIS
 
 ### Installation
 download plugin in (https://github.com/nicepay-dev/plugs-libs/tree/master/WooCommerce)
@@ -23,18 +32,38 @@ download plugin in (https://github.com/nicepay-dev/plugs-libs/tree/master/WooCom
  - chose file in your drive and instal plugin
  - select and active plugin.
 
-### Configuration
+#### Minimum Requirements
+
+- WordPress v3.9 or greater (tested up to v5.x)
+- WooCommerce v2 or greater (tested up to v3.5.2)
+
+#### Manual Installation
+
+1. [Download](../../archive/main.zip) the plugin from this repository.
+2. Extract the plugin, then rename the folder modules as **woocommerce-NICEPAY**.
+3. Choose menu Plugin.
+4. Choose sub-menu Tambah Baru.
+5. Click button instal / unggah Plugin.
+6. Click button Aktifkan Plugin for using plugin.
+7. Install & Activate the plugin from the Plugins menu within the WordPress admin panel.
+8. Go to menu **WooCommerce > Settings > Checkout > NICEPAY**, fill the configuration fields.
+   - Fill in the **Client ID**, **Client Secret**, **MID**, **Merchant Key** & **Private Key** with your corresonding [NICEPAY&nbsp; account](https://bo.nicepay.co.id/) credentials
+   - Click tick Enable
+   - Click Save Changes
+   - Note: key for Development enviroment & Production enviroment is different, make sure you use the correct one.
+   - Other configuration are optional, you may leave it as is.
+
+### Client Initialization and Configuration
 
 Please follow [this step by step guide](https://docs.nicepay.co.id/woocommerce) for complete configuration.
 Configure it from WooCommerce > Settings > Payment > Nicepay paymethod > Manage under configuration field WC Order Status on Payment Paid.
 
 Mandatory parameter on option configure : 
-
 - X-CLIENT-KEY = value Merchant ID from NICEPay, 
 - privateKey = value Key private, 
 - Client Secret = value client secret.
 
-### request-for-access-token
+### Access Token
 
          // Create Access Token
             $X_CLIENT_KEY = $this->XCLIENTKEY;
@@ -80,7 +109,7 @@ Mandatory parameter on option configure :
             // print_r($AcToken);exit();
             WC()->session->set('accessToken', $AcToken->responseCode);
 
-### Create Transaction :
+### Generate VA :
             $X_TIMESTAMP = $nicepay->get("X-TIMESTAMP");
             $timestamp = date('YmdHis');
             $CreateVA = VAV2Config::NICEPAY_GENERATE_VA_URL;
@@ -151,28 +180,8 @@ Mandatory parameter on option configure :
       $output = curl_exec($ch);
       $data = json_decode($output);
 
-#### Minimum Requirements
-
-- WordPress v3.9 or greater (tested up to v5.x)
-- WooCommerce v2 or greater (tested up to v3.5.2)
-
-#### Manual Installation
-
-1. [Download](../../archive/main.zip) the plugin from this repository.
-2. Extract the plugin, then rename the folder modules as **woocommerce-NICEPAY**.
-3. Choose menu Plugin.
-4. Choose sub-menu Tambah Baru.
-5. Click button instal / unggah Plugin.
-6. Click button Aktifkan Plugin for using plugin.
-7. Install & Activate the plugin from the Plugins menu within the WordPress admin panel.
-8. Go to menu **WooCommerce > Settings > Checkout > NICEPAY**, fill the configuration fields.
-   - Fill in the **Client ID**, **Client Secret**, **MID**, **Merchant Key** & **Private Key** with your corresonding [NICEPAY&nbsp; account](https://bo.nicepay.co.id/) credentials
-   - Click tick Enable
-   - Click Save Changes
-   - Note: key for Development enviroment & Production enviroment is different, make sure you use the correct one.
-   - Other configuration are optional, you may leave it as is.
-
-
+#### Notes
+Please Instal Wordpress and Woocomerce before instal Plugin 
 
 #### Get help
 
